@@ -1,0 +1,15 @@
+{
+  "name": "fireeyeapi",
+  "version": "1.0.0",
+  "description": "FireEye API Connector for Google Data Store",
+  "main": "Connector.ts",
+  "dependencies": {
+    "@types/google-apps-script": "^1.0.31"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ethan Delany",
+  "license": "ISC"
+}

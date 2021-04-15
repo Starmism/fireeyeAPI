@@ -1,0 +1,18 @@
+{
+  "timeZone": "America/Denver",
+  "dependencies": {},
+  "dataStudio": {
+    "name": "FireEye API Connector",
+    "logoUrl": "https://i.imgur.com/jN7YtwO.png",
+    "company": "Ethan Delany",
+    "companyUrl": "https://www.fireeye.com/",
+    "addonUrl": "https://www.fireeye.com/",
+    "supportUrl": "https://www.fireeye.com/",
+    "shortDescription": "FireEye WebUI Data Importer",
+    "description": "Assists with importing FireEye WebUI data into Google Data Studio.",
+    "authType": ["NONE"],
+    "feeType": ["FREE"]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8"
+}
