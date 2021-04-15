@@ -331,8 +331,7 @@ function _getField(fields: Fields, fieldID: String): Fields {
                 .newMetric()
                 .setId('vmGuest')
                 .setName('VM Guest')
-                .setType(dsTypes.BOOLEAN)
-                .setAggregation(dsAggregationTypes.COUNT);
+                .setType(dsTypes.TEXT);
             break;
         case 'virtualization':
             fields
@@ -617,7 +616,7 @@ function _getDataField(entity, fieldId) {
         case 'platform':
             return entity['platform']
         case 'vmGuest':
-            return entity['vmGuest'] === 'Yes'
+            return (entity['vmGuest'] === 'Yes' ? 'Virtual' : 'Physical')
         case 'virtualization':
             return entity['virtualization']
         case 'gmtoffset':
