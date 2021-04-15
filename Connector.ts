@@ -64,8 +64,7 @@ function _getField(fields: Fields, fieldID: String): Fields {
                 .newMetric()
                 .setId('online')
                 .setName('Online Status')
-                .setType(dsTypes.BOOLEAN)
-                .setAggregation(dsAggregationTypes.COUNT);
+                .setType(dsTypes.TEXT);
             break;
         case 'productName':
             fields
@@ -114,7 +113,7 @@ function _getField(fields: Fields, fieldID: String): Fields {
                 .newDimension()
                 .setId('appVersion')
                 .setName('Agent Version')
-                .setType(dsTypes.NUMBER);
+                .setType(dsTypes.TEXT);
             break;
         case 'cloudProvider':
             fields
@@ -539,7 +538,8 @@ function _getDataField(entity, fieldId) {
         case 'hostname':
             return entity['hostname']
         case 'online':
-            return entity['online'] === 'online'
+            const onlineStatus = entity['online']
+            return onlineStatus.charAt(0).toUpperCase() + onlineStatus.slice(1)
         case 'productName':
             return entity['productName']
         case 'patchLevel':
@@ -553,7 +553,7 @@ function _getDataField(entity, fieldId) {
         case 'lastCheckin':
             return fixDate(entity, 'lastCheckin')
         case 'appVersion':
-            return checkFloat(entity, 'appVersion')
+            return entity['appVersion']
         case 'cloudProvider':
             return entity['cloudProvider']
         case 'instanceID':
