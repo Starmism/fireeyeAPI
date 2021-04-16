@@ -63,7 +63,7 @@ _An example report that you could make using the data from this project._
 
 ### Installation
 #### On the command line
-1. Download and unzip the archive from this page, or fork the repo and clone it locally.
+1. Download and unzip the archive from this page, or fork the repo and clone it locally
   ```sh
   git clone https://github.com/Starmism/fireeyeAPI.git
   ```
@@ -75,11 +75,12 @@ _An example report that you could make using the data from this project._
   ```sh
   clasp login
   ```
-4. Create a project and select `Standalone` when prompted for type.
+4. Navigate to the project directory
+5. Create a project and select `Standalone` when prompted for type
   ```sh
   clasp create --title "FireEye Endpoint Security Host Management Connector"
   ```
-5. Push the code to Google App Scripts
+6. Push the code to Google App Scripts
   ```sh
   clasp push
   ```
