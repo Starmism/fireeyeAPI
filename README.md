@@ -55,7 +55,7 @@ _An example report that you could make using the data from this project._
   - [API Documentation](https://fireeye.market/apps/qEoJkb2A)
 * User account with API access role (_api_analyst_ or _api_admin_)
 * Host Management API URL
-  - Available in the FireEye Endpoint Security web console under `Modules` -> `API Documentation` -> `Host Management`
+  - Available in the FireEye Endpoint Security web console under <br />`Modules` -> `API Documentation`-> `Host Management`
     - It should look like: ```https://<endpoint security fqdn>/hx/api/plugins/host-management/v1/```
 * Google Account
 * Google Scripts API enabled (https://script.google.com/home/usersettings)
