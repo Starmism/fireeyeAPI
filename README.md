@@ -95,4 +95,5 @@ _An example report that you could make using the data from this project._
 
 ## Resources
 [FireEye Developer Hub](https://fireeye.dev/docs/endpoint/)
+<br />
 [Endpoint API Documentation](https://docs.fireeye.com/docs/docs_en/HX/sw/2020.2/API/HX_API_2020.2_en.pdf) _(Login Required)_
