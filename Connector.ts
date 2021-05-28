@@ -146,5 +146,5 @@ function updateToken(request) {
 
 
 function isAdminUser() {
-    return true
+    return false
 }
