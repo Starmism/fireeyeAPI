@@ -21,13 +21,9 @@ function getConfig(request) {
         .setId('url')
         .setName('URL')
 
-    if (userProperties.getProperties().hasOwnProperty('username') && userProperties.getProperties().hasOwnProperty('password')) {
-        config.newCheckbox()
-            .setId('reset')
-            .setName('Reset Credentials?')
-
-        return config.build()
-    }
+    config.newInfo()
+        .setId('resetInfo')
+        .setText('If you leave the username and password blank, it will use the current saved credentials.')
 
     config.newTextInput()
         .setId('username')
@@ -63,12 +59,6 @@ function getSchema(request) {
 
 
 function getData(request) {
-    // If they check the reset box, reset their username & password
-    if (userProperties.getProperty('reset') !== null) {
-        userProperties.setProperty('username', null)
-        userProperties.setProperty('password', null)
-    }
-
     if (userProperties.getProperty('x-feapi-token') === null) {
         updateToken(request)
     }
@@ -116,7 +106,7 @@ function getData(request) {
     }))
 
     return {
-        schema: cc.getFields().build(),
+        schema: request.fields,
         rows: rows
     }
 }
@@ -129,12 +119,12 @@ function updateToken(request) {
     let password = userProperties.getProperty('password')
 
     // If we aren't storing the username, get it from the input
-    if (username === null || username === '') {
+    if (username === null || username === '' || request.configParams.username !== '') {
         userProperties.setProperty('username', request.configParams.username)
         username = userProperties.getProperty('username')
     }
     // If we aren't storing the password, get it from the input
-    if (password === null || password === '') {
+    if (password === null || password === '' || request.constructor.password !== '') {
         userProperties.setProperty('password', request.configParams.password)
         password = userProperties.getProperty('password')
     }
@@ -156,5 +146,5 @@ function updateToken(request) {
 
 
 function isAdminUser() {
-    return false
+    return true
 }
