@@ -70,7 +70,7 @@ function getData(request) {
     }
 
     if (userProperties.getProperty('x-feapi-token') === null) {
-        getNewToken(request)
+        updateToken(request)
     }
 
     const url = request.configParams.url + 'data'
@@ -86,7 +86,7 @@ function getData(request) {
     // If we get denied, it means our X-FeAPI-Token is expired
     // Grab a new one and try again!
     if (httpResponse.getResponseCode() === 401) {
-        getNewToken(request)
+        updateToken(request)
 
         requestOptions = {
             muteHttpExceptions: true,
@@ -123,7 +123,7 @@ function getData(request) {
 
 
 
-function getNewToken(request) {
+function updateToken(request) {
     const userProperties = PropertiesService.getUserProperties()
     let username = userProperties.getProperty('username')
     let password = userProperties.getProperty('password')
