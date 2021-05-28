@@ -99,14 +99,25 @@ function getData(request) {
 
 
     const data: Object = JSON.parse(httpResponse.getContentText())
-    const fieldIds: string[] = request.fields.map((field) => field.name)
 
-    const rows = data['data'].map((dataPoint) => ({
-        values: fieldIds.map((fieldId) => dataDefinitions[fieldId].data(dataPoint))
-    }))
+    let fields = cc.getFields()
+    const fieldIds: string[] = request.fields.map((field) => field.name)
+    fieldIds.forEach(fieldId => {
+        dataDefinitions[fieldId]
+            .build(fields)
+            .setId(dataDefinitions[fieldId].id)
+            .setName(dataDefinitions[fieldId].name)
+            .setType(dataDefinitions[fieldId].type)
+    })
+
+    const rows = data['data'].map(dataPoint => {
+        return {
+            values: fieldIds.map(fieldId => dataDefinitions[fieldId].data(dataPoint))
+        }
+    })
 
     return {
-        schema: request.fields,
+        schema: fields.build(),
         rows: rows
     }
 }
@@ -119,12 +130,12 @@ function updateToken(request) {
     let password = userProperties.getProperty('password')
 
     // If we aren't storing the username, get it from the input
-    if (username === null || username === '' || request.configParams.username !== '') {
+    if (username === null || username === '' || typeof request.configParams.username !== 'undefined') {
         userProperties.setProperty('username', request.configParams.username)
         username = userProperties.getProperty('username')
     }
     // If we aren't storing the password, get it from the input
-    if (password === null || password === '' || request.constructor.password !== '') {
+    if (password === null || password === '' || typeof request.constructor.password !== 'undefined') {
         userProperties.setProperty('password', request.configParams.password)
         password = userProperties.getProperty('password')
     }
