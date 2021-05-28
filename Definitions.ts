@@ -308,7 +308,7 @@ const dataDefinitions = {
                     return 'Windows'
                 case 'macos':
                 case 'osx':
-                    return 'MacOS'
+                    return 'macOS'
                 case 'linux':
                     return 'Linux'
                 default:
@@ -370,7 +370,7 @@ const dataDefinitions = {
     'totalphysical' : {
         'build' : buildDimension,
         'id'    : 'totalphysical',
-        'name'  : 'Total Store (GB)',
+        'name'  : 'Total Storage (GB)',
         'type'  : dsTypes.NUMBER,
         'data'  : (entity) => entity['totalphysical']
     },
