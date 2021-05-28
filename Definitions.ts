@@ -1,9 +1,9 @@
 const buildMetric = (fields: Fields) => fields.newMetric()
 const buildDimension = (fields: Fields) => fields.newDimension()
 
-const cc = DataStudioApp.createCommunityConnector();
-const dsTypes = cc.FieldType;
-const userProperties = PropertiesService.getUserProperties();
+const cc = DataStudioApp.createCommunityConnector()
+const dsTypes = cc.FieldType
+const userProperties = PropertiesService.getUserProperties()
 
 const dataDefinitions = {
     'id' : {
@@ -19,7 +19,7 @@ const dataDefinitions = {
         'name'  : 'Server Time',
         'type'  : dsTypes.YEAR_MONTH_DAY_SECOND,
         'data'  : (entity) => {
-            const date = fixDate(entity, 'serverTime')
+            const date = fixDate(entity['serverTime'])
             return date?.substring(0, 15)
         }
     },
@@ -35,10 +35,7 @@ const dataDefinitions = {
         'id'    : 'online',
         'name'  : 'Online Status',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => {
-            const onlineStatus = entity['online']
-            return onlineStatus?.charAt(0).toUpperCase() + onlineStatus?.slice(1)
-        }
+        'data'  : (entity) => upify(entity['online'])
     },
     'productName' : {
         'build' : buildDimension,
@@ -80,7 +77,7 @@ const dataDefinitions = {
         'id'    : 'lastCheckin',
         'name'  : 'Last Check-In',
         'type'  : dsTypes.YEAR_MONTH_DAY_SECOND,
-        'data'  : (entity) => fixDate(entity, 'lastCheckin')
+        'data'  : (entity) => fixDate(entity['lastCheckin'])
     },
     'appVersion' : {
         'build' : buildDimension,
@@ -108,14 +105,14 @@ const dataDefinitions = {
         'id'    : 'containmentState',
         'name'  : 'Containment State',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['containmentState']
+        'data'  : (entity) => upify(entity['containmentState'])
     },
     'realTimeStatus' : {
         'build' : buildDimension,
         'id'    : 'realTimeStatus',
         'name'  : 'Real Time',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['realTimeStatus']
+        'data'  : (entity) => upify(entity['realTimeStatus'])
     },
     'intelVersion' : {
         'build' : buildDimension,
@@ -129,14 +126,14 @@ const dataDefinitions = {
         'id'    : 'intelTimestamp',
         'name'  : 'Real Time Content Updated',
         'type'  : dsTypes.YEAR_MONTH_DAY_SECOND,
-        'data'  : (entity) => fixDate(entity, 'intelTimestamp')
+        'data'  : (entity) => fixDate(entity['intelTimestamp'])
     },
     'ExdPluginStatus' : {
         'build' : buildDimension,
         'id'    : 'ExdPluginStatus',
         'name'  : 'Exploit Guard',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['ExdPluginStatus']
+        'data'  : (entity) => upify(entity['ExdPluginStatus'])
     },
     'exdContentVersion' : {
         'build' : buildDimension,
@@ -157,14 +154,14 @@ const dataDefinitions = {
         'id'    : 'malwareGuard',
         'name'  : 'Malware Guard',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['malwareGuard']
+        'data'  : (entity) => upify(entity['malwareGuard'])
     },
     'malwareGuardQuarantineStatus' : {
         'build' : buildDimension,
         'id'    : 'malwareGuardQuarantineStatus',
         'name'  : 'Malware Guard Quarantine',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['malwareGuardQuarantineStatus']
+        'data'  : (entity) => upify(entity['malwareGuardQuarantineStatus'])
     },
     'malwareContentVersion' : {
         'build' : buildDimension,
@@ -178,7 +175,7 @@ const dataDefinitions = {
         'id'    : 'malwareMgContentUpdated',
         'name'  : 'Malware Guard Model Last Updated',
         'type'  : dsTypes.YEAR_MONTH_DAY_SECOND,
-        'data'  : (entity) => fixDate(entity, 'malwareMgContentUpdated')
+        'data'  : (entity) => fixDate(entity['malwareMgContentUpdated'])
     },
     'malwareMgEngineVersion' : {
         'build' : buildDimension,
@@ -199,21 +196,21 @@ const dataDefinitions = {
         'id'    : 'malwareProtectionStatus',
         'name'  : 'Malware Protection',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['malwareProtectionStatus']
+        'data'  : (entity) => upify(entity['malwareProtectionStatus'])
     },
     'malwareAVstatus' : {
         'build' : buildDimension,
         'id'    : 'malwareAVstatus',
         'name'  : 'Signature and Heuristic Detection',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['malwareAVstatus']
+        'data'  : (entity) => upify(entity['malwareAVstatus'])
     },
     'malwareAVQuarantineStatus' : {
         'build' : buildDimension,
         'id'    : 'malwareAVQuarantineStatus',
         'name'  : 'Signature and Heuristic Detection Quarantine',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['malwareAVQuarantineStatus']
+        'data'  : (entity) => upify(entity['malwareAVQuarantineStatus'])
     },
     'malwareAvContentVersion' : {
         'build' : buildDimension,
@@ -227,7 +224,7 @@ const dataDefinitions = {
         'id'    : 'malwareAvContentUpdated',
         'name'  : 'AV Content Last Updated',
         'type'  : dsTypes.YEAR_MONTH_DAY_SECOND,
-        'data'  : (entity) => fixDate(entity, 'malwareAvContentUpdated')
+        'data'  : (entity) => fixDate(entity['malwareAvContentUpdated'])
     },
     'malwareAvEngineVersion' : {
         'build' : buildDimension,
@@ -248,14 +245,14 @@ const dataDefinitions = {
         'id'    : 'fips',
         'name'  : 'FIPS',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['fips']
+        'data'  : (entity) => upify(entity['fips'])
     },
     'proRemSvcStatus' : {
         'build' : buildDimension,
         'id'    : 'proRemSvcStatus',
         'name'  : 'ProRemSvcStatus',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['proRemSvcStatus']
+        'data'  : (entity) => upify(entity['proRemSvcStatus'])
     },
     'kernelServicesStatus' : {
         'build' : buildDimension,
@@ -303,7 +300,21 @@ const dataDefinitions = {
         'id'    : 'platform',
         'name'  : 'Platform',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['platform']
+        'data'  : (entity) => {
+            const platform = entity['platform']
+
+            switch (platform) {
+                case 'win':
+                    return 'Windows'
+                case 'macos':
+                case 'osx':
+                    return 'MacOS'
+                case 'linux':
+                    return 'Linux'
+                default:
+                    return platform
+            }
+        }
     },
     'vmGuest' : {
         'build' : buildDimension,
@@ -361,138 +372,147 @@ const dataDefinitions = {
         'id'    : 'totalphysical',
         'name'  : 'Total Store (GB)',
         'type'  : dsTypes.NUMBER,
-        'data'  : (entity) => fixFloat(entity, 'totalphysical')
+        'data'  : (entity) => entity['totalphysical']
     },
     'availphysical' : {
         'build' : buildDimension,
         'id'    : 'availphysical',
         'name'  : 'Available Storage (GB)',
         'type'  : dsTypes.NUMBER,
-        'data'  : (entity) => fixFloat(entity, 'availphysical')
+        'data'  : (entity) => entity['availphysical']
     },
     'ExdPluginVersion' : {
         'build' : buildDimension,
         'id'    : 'ExdPluginVersion',
         'name'  : 'ExdPlugin Version',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['ExdPluginVersion']
+        'data'  : (entity) => upifyNum(entity['ExdPluginVersion'])
     },
     'EndpointUIStatus' : {
         'build' : buildDimension,
         'id'    : 'EndpointUIStatus',
         'name'  : 'Endpoint UI Status',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['EndpointUIStatus']
+        'data'  : (entity) => upify(entity['EndpointUIStatus'])
     },
     'EndpointUIVersion' : {
         'build' : buildDimension,
         'id'    : 'EndpointUIVersion',
         'name'  : 'Endpoint UI Version',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['EndpointUIVersion']
+        'data'  : (entity) => upifyNum(entity['EndpointUIVersion'])
     },
     'LogonTrackerStatus' : {
         'build' : buildDimension,
         'id'    : 'LogonTrackerStatus',
         'name'  : 'LogonTracker Status',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['LogonTrackerStatus']
+        'data'  : (entity) => upify(entity['LogonTrackerStatus'])
     },
     'LogonTrackerVersion' : {
         'build' : buildDimension,
         'id'    : 'LogonTrackerVersion',
         'name'  : 'LogonTracker Version',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['LogonTrackerVersion']
+        'data'  : (entity) => upifyNum(entity['LogonTrackerVersion'])
     },
     'ProcessTrackerStatus' : {
         'build' : buildDimension,
         'id'    : 'ProcessTrackerStatus',
         'name'  : 'ProcessTracker Status',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['ProcessTrackerStatus']
+        'data'  : (entity) => upify(entity['ProcessTrackerStatus'])
     },
     'ProcessTrackerVersion' : {
         'build' : buildDimension,
         'id'    : 'ProcessTrackerVersion',
         'name'  : 'ProcessTracker Version',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['ProcessTrackerVersion']
+        'data'  : (entity) => upifyNum(entity['ProcessTrackerVersion'])
     },
     'UACProtectStatus' : {
         'build' : buildDimension,
         'id'    : 'UACProtectStatus',
         'name'  : 'UACProtect Status',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['UACProtectStatus']
+        'data'  : (entity) => upify(entity['UACProtectStatus'])
     },
     'UACProtectVersion' : {
         'build' : buildDimension,
         'id'    : 'UACProtectVersion',
         'name'  : 'UACProtect Version',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['UACProtectVersion']
+        'data'  : (entity) => upifyNum(entity['UACProtectVersion'])
     },
     'AmsiStatus' : {
         'build' : buildDimension,
         'id'    : 'AmsiStatus',
         'name'  : 'Amsi Status',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['AmsiStatus']
+        'data'  : (entity) => upify(entity['AmsiStatus'])
     },
     'AmsiVersion' : {
         'build' : buildDimension,
         'id'    : 'AmsiVersion',
         'name'  : 'Amsi Version',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['AmsiVersion']
+        'data'  : (entity) => upifyNum(entity['AmsiVersion'])
     },
     'EventStreamerStatus' : {
         'build' : buildDimension,
         'id'    : 'EventStreamerStatus',
         'name'  : 'EventStreamer Status',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['EventStreamerStatus']
+        'data'  : (entity) => upify(entity['EventStreamerStatus'])
     },
     'EventStreamerVersion' : {
         'build' : buildDimension,
         'id'    : 'EventStreamerVersion',
         'name'  : 'EventStreamer Version',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['EventStreamerVersion']
+        'data'  : (entity) => upifyNum(entity['EventStreamerVersion'])
     },
     'HostRemediationStatus' : {
         'build' : buildDimension,
         'id'    : 'HostRemediationStatus',
         'name'  : 'HostRemediation Status',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['HostRemediationStatus']
+        'data'  : (entity) => upify(entity['HostRemediationStatus'])
     },
     'HostRemediationVersion' : {
         'build' : buildDimension,
         'id'    : 'HostRemediationVersion',
         'name'  : 'HostRemediation Version',
         'type'  : dsTypes.TEXT,
-        'data'  : (entity) => entity['HostRemediationVersion']
+        'data'  : (entity) => upifyNum(entity['HostRemediationVersion'])
     }
 }
 
 
 
-function fixFloat(entity, num) {
-    const replacedNum = entity[num]?.replace(/./g, '')
 
-    const parsedNum = parseInt(entity[replacedNum])
-
-    return isNaN(parsedNum) ? -1 : parsedNum
+function fixDate(date: string) {
+    if (date !== undefined) {
+        return date?.replace(/-/g, '').replace(/:/g, '').replace(/T/g, '').replace(/Z/g, '')
+    } else {
+        return date
+    }
 }
 
-function fixDate(entity, date) {
-    const parsedDate = entity[date]
+function upify(string: string) {
+    const data = string.split(' ')
 
-    if (parsedDate !== undefined) {
-        return entity[date]?.replace(/-/g, '').replace(/:/g, '').replace(/T/g, '').replace(/Z/g, '')
+    for (let i = 0; i < data.length; i++) {
+        data[i] = data[i][0]?.toUpperCase() + data[i]?.slice(1)
     }
 
-    return parsedDate
+    return data.join(' ')
+}
+
+function upifyNum(string: string) {
+    if (Number.isNaN(string)) {
+        return upify(string)
+    } else {
+        return string
+    }
 }

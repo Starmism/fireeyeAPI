@@ -63,10 +63,6 @@ function getSchema(request) {
 
 
 function getData(request) {
-    const fields = Object.values(dataDefinitions)
-        .map((value) => value.id)
-        .reduce<Fields>((acc, id) => getField(acc, id), cc.getFields())
-
     // If they check the reset box, reset their username & password
     if (userProperties.getProperty('reset') !== null) {
         userProperties.setProperty('username', null)
@@ -113,18 +109,19 @@ function getData(request) {
 
 
     const data: Object = JSON.parse(httpResponse.getContentText())
-    const fieldIds: string[] = request.fields.map(field => field.name);
+    const fieldIds: string[] = request.fields.map((field) => field.name)
 
     const rows = data['data'].map((dataPoint) => ({
-        values: fieldIds.map(fieldId => dataDefinitions[fieldId].data(dataPoint))
+        values: fieldIds.map((fieldId) => dataDefinitions[fieldId].data(dataPoint))
     }))
-    console.log(rows)
-    console.log(fieldIds)
+
     return {
-        schema: fields.build(),
+        schema: cc.getFields().build(),
         rows: rows
     }
 }
+
+
 
 function getNewToken(request) {
     const userProperties = PropertiesService.getUserProperties()
