@@ -15,7 +15,7 @@ function getAuthType() {
 }
 
 function getConfig(request) {
-    const isFirstRequest = request.configParams === undefined
+    const isFirstRequest = request.configParams === undefined || request.configParams.url === undefined
     const config = cc.getConfig()
 
     if (isFirstRequest) {
@@ -66,6 +66,8 @@ function getConfig(request) {
         response['data']['entries'].forEach(entry => {
             hostSetsSelector.addOption(config.newOptionBuilder().setLabel(entry['name']).setValue(entry['_id']))
         })
+
+        config.setIsSteppedConfig(false)
     }
 
     return config.build()
