@@ -72,43 +72,61 @@ function getData(request) {
         updateToken(request)
     }
 
-    const url = `${request.configParams.url}/hx/api/plugins/host-management/v1/data`
-    let requestOptions: URLFetchRequestOptions = {
-        muteHttpExceptions: true,
-        headers: {
-            'X-FeAPI-Token' : userProperties.getProperty('x-feapi-token')
-        }
-    }
+    let offset = 0
+    let counter = -1
+    let data: Object[] = []
 
-    let httpResponse = UrlFetchApp.fetch(url, requestOptions)
-
-    // If we get denied, it means our X-FeAPI-Token is expired
-    // Grab a new one and try again!
-    if (httpResponse.getResponseCode() === 401) {
-        updateToken(request)
-
-        requestOptions = {
+    do {
+        const url = `${request.configParams.url}/hx/api/plugins/host-management/v1/data?offset=${offset}`
+        let requestOptions: URLFetchRequestOptions = {
             muteHttpExceptions: true,
             headers: {
                 'X-FeAPI-Token' : userProperties.getProperty('x-feapi-token')
             }
         }
 
-        httpResponse = UrlFetchApp.fetch(url, requestOptions)
-    }
+        let httpResponse = UrlFetchApp.fetch(url, requestOptions)
 
-    // Log errors nicely for debugging
-    if (httpResponse.getResponseCode() !== 200) {
-        Logger.log('An exception occurred accessing the API:')
-        Logger.log(httpResponse.getResponseCode())
-        Logger.log(httpResponse.getAllHeaders())
-        Logger.log(httpResponse.getContentText())
-        throw new Error(`The API replied with an unsuccessful status code of ${httpResponse.getResponseCode()}`)
-    }
+        // If we get denied, it means our X-FeAPI-Token is expired
+        // Grab a new one and try again!
+        if (httpResponse.getResponseCode() === 401) {
+            updateToken(request)
+
+            requestOptions = {
+                muteHttpExceptions: true,
+                headers: {
+                    'X-FeAPI-Token' : userProperties.getProperty('x-feapi-token')
+                }
+            }
+
+            httpResponse = UrlFetchApp.fetch(url, requestOptions)
+        }
+
+        // Log errors nicely for debugging
+        if (httpResponse.getResponseCode() !== 200) {
+            Logger.log('An exception occurred accessing the API:')
+            Logger.log(httpResponse.getResponseCode())
+            Logger.log(httpResponse.getAllHeaders())
+            Logger.log(httpResponse.getContentText())
+            throw new Error(`The API replied with an unsuccessful status code of ${httpResponse.getResponseCode()}`)
+        }
+
+        const tempData = JSON.parse(httpResponse.getContentText())
+
+        // Set the counter to the total number only from the first page
+        if (counter === -1) {
+            counter = tempData['total']
+        }
+
+        // Append this page's data to the data array
+        data = data.concat(tempData['data'])
+
+        counter -= 50
+        offset += 50
+    } while (counter > 0)
+
 
     const hostsInHostSet = getListOfHostsInHostSet(request)
-
-    const data: Object = JSON.parse(httpResponse.getContentText())
 
     const fieldIds: string[] = request.fields.map((field) => field.name)
     fieldIds.forEach(fieldId => {
@@ -119,7 +137,7 @@ function getData(request) {
             .setType(dataDefinitions[fieldId].type)
     })
 
-    const rows = data['data'].filter(data => hostsInHostSet.length === 0 || hostsInHostSet.includes(data['id'])).map(dataPoint => {
+    const rows = data.filter(data => hostsInHostSet.length === 0 || hostsInHostSet.includes(data['id'])).map(dataPoint => {
         return {
             values: fieldIds.map(fieldId => dataDefinitions[fieldId].data(dataPoint))
         }
