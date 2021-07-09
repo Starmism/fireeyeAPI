@@ -54,9 +54,10 @@ _An example report that you could make using the data from this project._
   - [Host Management](https://fireeye.market/apps/298195)
   - [API Documentation](https://fireeye.market/apps/qEoJkb2A)
 * User account with API access role (_api_analyst_ or _api_admin_)
-* Host Management API URL
-  - Available in the FireEye Endpoint Security web console under <br />`Modules` -> `API Documentation`-> `Host Management`
-    - It should look like: ```https://<endpoint security fqdn>/hx/api/plugins/host-management/v1/```
+* Your Endpoint Security Server Base URL
+  - Available in the FireEye Endpoint Security web console under <br />`Modules` -> `API Documentation`
+    - It should look like: ```https://<endpoint security fqdn>```
+    - There should be no trailing `/hx/api`
 * Google Account
 * Google Scripts API enabled (https://script.google.com/home/usersettings)
 * ```clasp```
@@ -90,7 +91,7 @@ _An example report that you could make using the data from this project._
 3. Click `Install add-on`
 4. Expand `Latest Version (Head)`
 5. Click the Data Studio URL it reveals
-6. Input the FireEye Endpoint Security Host Management API URL you got from above as well as your api user's credentials and click `Connect`
+6. Input the FireEye Endpoint Security API URL you got from above as well as your api user's credentials and click `Connect`
 7. Click `Create Report`
 8. Make a beautiful report!
 
