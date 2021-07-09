@@ -20,6 +20,7 @@ function getConfig(request) {
     config.newTextInput()
         .setId('url')
         .setName('URL')
+        .setHelpText('Base URL. Should not contain `/hx/api`.')
 
     config.newInfo()
         .setId('hostSetInfo')
@@ -71,7 +72,7 @@ function getData(request) {
         updateToken(request)
     }
 
-    const url = request.configParams.url + 'data'
+    const url = `${request.configParams.url}/hx/api/plugins/host-management/v1/data`
     let requestOptions: URLFetchRequestOptions = {
         muteHttpExceptions: true,
         headers: {
@@ -139,9 +140,7 @@ function getHostSetIds(request): number[] {
             'X-FeAPI-Token' : userProperties.getProperty('x-feapi-token')
         }
     }
-    const urlRaw = request.configParams.url
-    const hostSetName = request.configParams.hostSetName
-    const url = urlRaw.substring(0, urlRaw.search('.com') + 4) + '/hx/api/v3/host_sets?sort=_id&name=' + hostSetName
+    const url = `${request.configParams.url}/hx/api/v3/host_sets?sort=_id&name=${request.configParams.hostSetName}`
     const httpResponse = UrlFetchApp.fetch(url, requestOptions)
     return JSON.parse(httpResponse.getContentText())['data']['entries'].map(entry => entry['_id'])
 }
@@ -157,8 +156,7 @@ function getListOfHostsInHostSet(request): string[] {
             'X-FeAPI-Token' : userProperties.getProperty('x-feapi-token')
         }
     }
-    const urlRaw = request.configParams.url
-    const url = urlRaw.substring(0, urlRaw.search('.com') + 4) + '/hx/api/v3/hosts?sort=_id&host_sets._id=' + hostSetIds[0]
+    const url = `${request.configParams.url}/hx/api/v3/hosts?sort=_id&host_sets._id=${hostSetIds[0]}`
     const httpResponse = UrlFetchApp.fetch(url, requestOptions)
     return JSON.parse(httpResponse.getContentText())['data']['entries'].map(entry => entry['_id'])
 }
@@ -191,8 +189,7 @@ function updateToken(request) {
             'Authorization' : `Basic ${base64}`
         }
     }
-    const urlRaw = request.configParams.url
-    const url = urlRaw.substring(0, urlRaw.search('.com') + 4) + '/hx/api/v3/token'
+    const url = `${request.configParams.url}/hx/api/v3/token`
     const httpResponse = UrlFetchApp.fetch(url, requestOptions)
     userProperties.setProperty('x-feapi-token', httpResponse.getHeaders()['x-feapi-token'])
 }
