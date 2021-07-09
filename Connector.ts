@@ -22,6 +22,14 @@ function getConfig(request) {
         .setName('URL')
 
     config.newInfo()
+        .setId('hostSetInfo')
+        .setText('The Host Set Name is optional. It allows you to filter returned hosts by a host set name.')
+
+    config.newTextInput()
+        .setId('hostSetName')
+        .setName('Host Set Name')
+
+    config.newInfo()
         .setId('resetInfo')
         .setText('If you leave the username and password blank, it will use the current saved credentials.')
 
@@ -97,33 +105,67 @@ function getData(request) {
         throw new Error(`The API replied with an unsuccessful status code of ${httpResponse.getResponseCode()}`)
     }
 
+    const hostsInHostSet = getListOfHostsInHostSet(request)
 
     const data: Object = JSON.parse(httpResponse.getContentText())
 
-    let fields = cc.getFields()
     const fieldIds: string[] = request.fields.map((field) => field.name)
     fieldIds.forEach(fieldId => {
         dataDefinitions[fieldId]
-            .build(fields)
+            .build(cc.getFields())
             .setId(dataDefinitions[fieldId].id)
             .setName(dataDefinitions[fieldId].name)
             .setType(dataDefinitions[fieldId].type)
     })
 
-    const rows = data['data'].map(dataPoint => {
+    const rows = data['data'].filter(data => hostsInHostSet.includes(data['id'])).map(dataPoint => {
         return {
             values: fieldIds.map(fieldId => dataDefinitions[fieldId].data(dataPoint))
         }
     })
 
     return {
-        schema: fields.build(),
+        schema: cc.getFields().build(),
         rows: rows
     }
 }
 
 
+// This function gets a list of host set IDs when given a name
+function getHostSetIds(request): number[] {
+    const requestOptions: URLFetchRequestOptions = {
+        muteHttpExceptions: true,
+        headers: {
+            'X-FeAPI-Token' : userProperties.getProperty('x-feapi-token')
+        }
+    }
+    const urlRaw = request.configParams.url
+    const hostSetName = request.configParams.hostSetName
+    const url = urlRaw.substring(0, urlRaw.search('.com') + 4) + '/hx/api/v3/host_sets?sort=_id&name=' + hostSetName
+    const httpResponse = UrlFetchApp.fetch(url, requestOptions)
+    return JSON.parse(httpResponse.getContentText())['data']['entries'].map(entry => entry['_id'])
+}
 
+// This function gets the list of Host ID's (note the difference)
+// in the given host set. It uses the above function to get the host set ID.
+function getListOfHostsInHostSet(request): string[] {
+    const hostSetIds = getHostSetIds(request)
+
+    const requestOptions: URLFetchRequestOptions = {
+        muteHttpExceptions: true,
+        headers: {
+            'X-FeAPI-Token' : userProperties.getProperty('x-feapi-token')
+        }
+    }
+    const urlRaw = request.configParams.url
+    const url = urlRaw.substring(0, urlRaw.search('.com') + 4) + '/hx/api/v3/hosts?sort=_id&host_sets._id=' + hostSetIds[0]
+    const httpResponse = UrlFetchApp.fetch(url, requestOptions)
+    return JSON.parse(httpResponse.getContentText())['data']['entries'].map(entry => entry['_id'])
+}
+
+
+// This function fetches the API access token from the API
+// and updates it in the user environment variables
 function updateToken(request) {
     const userProperties = PropertiesService.getUserProperties()
     let username = userProperties.getProperty('username')
