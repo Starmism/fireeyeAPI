@@ -15,31 +15,58 @@ function getAuthType() {
 }
 
 function getConfig(request) {
+    const isFirstRequest = request.configParams === undefined
     const config = cc.getConfig()
 
-    config.newTextInput()
-        .setId('url')
-        .setName('URL')
-        .setHelpText('Base URL. Should not contain `/hx/api`.')
+    if (isFirstRequest) {
+        config.setIsSteppedConfig(true)
 
-    config.newInfo()
-        .setId('hostSetInfo')
-        .setText('The Host Set Name is optional. It allows you to filter returned hosts by a host set name.')
+        config.newInfo()
+            .setId('urlInfo')
+            .setText('This should be your Base URL without a trailing `/`. It should not contain `/hx/api`.')
 
-    config.newTextInput()
-        .setId('hostSetName')
-        .setName('Host Set Name')
+        config.newTextInput()
+            .setId('url')
+            .setName('URL')
 
-    config.newInfo()
-        .setId('resetInfo')
-        .setText('If you leave the username and password blank, it will use the current saved credentials.')
+        config.newInfo()
+            .setId('resetInfo')
+            .setText('If you leave the username and password blank, it will use the current saved credentials.')
 
-    config.newTextInput()
-        .setId('username')
-        .setName('Username')
-    config.newTextInput()
-        .setId('password')
-        .setName('Password')
+        config.newTextInput()
+            .setId('username')
+            .setName('Username')
+        config.newTextInput()
+            .setId('password')
+            .setName('Password')
+    }
+
+    if (!isFirstRequest) {
+        let hostSetsSelector = config.newSelectMultiple()
+            .setId('hostSets')
+            .setName('Host Set Selector')
+
+        updateToken(request)
+
+        const url = `${request.configParams.url}/hx/api/v3/host_sets?sort=_id`
+        const requestOptions: URLFetchRequestOptions = {
+            muteHttpExceptions: true,
+            headers: {
+                'X-FeAPI-Token' : userProperties.getProperty('x-feapi-token')
+            }
+        }
+
+        const httpResponse = UrlFetchApp.fetch(url, requestOptions)
+        const response = JSON.parse(httpResponse.getContentText())
+
+        if (httpResponse.getResponseCode() !== 200) {
+            cc.newUserError().setText('Error with accessing the API. Check your URL and credentials.').throwException()
+        }
+
+        response['data']['entries'].forEach(entry => {
+            hostSetsSelector.addOption(config.newOptionBuilder().setLabel(entry['name']).setValue(entry['_id']))
+        })
+    }
 
     return config.build()
 }
@@ -158,13 +185,16 @@ function getHostSetIds(request): number[] {
             'X-FeAPI-Token' : userProperties.getProperty('x-feapi-token')
         }
     }
-    const url = `${request.configParams.url}/hx/api/v3/host_sets?sort=_id&name=${request.configParams.hostSetName}`
+    const url = `${request.configParams.url}/hx/api/v3/host_sets?sort=_id`
     const httpResponse = UrlFetchApp.fetch(url, requestOptions)
-    return JSON.parse(httpResponse.getContentText())['data']['entries'].map(entry => entry['_id'])
+
+    return JSON.parse(httpResponse.getContentText())['data']['entries']
+        .map(entry => entry['_id'])
+        .filter(id => request.configParams.hostSets.includes(id))
 }
 
 // This function gets the list of Host ID's (note the difference)
-// in the given host set. It uses the above function to get the host set ID.
+// in the given host set. It uses the above function to get the host set IDs.
 function getListOfHostsInHostSet(request): string[] {
     const hostSetIds = getHostSetIds(request)
 
@@ -174,9 +204,17 @@ function getListOfHostsInHostSet(request): string[] {
             'X-FeAPI-Token' : userProperties.getProperty('x-feapi-token')
         }
     }
-    const url = `${request.configParams.url}/hx/api/v3/hosts?sort=_id&host_sets._id=${hostSetIds[0]}`
-    const httpResponse = UrlFetchApp.fetch(url, requestOptions)
-    return JSON.parse(httpResponse.getContentText())['data']['entries'].map(entry => entry['_id'])
+
+
+    let entries: string[] = []
+
+    for (let i = 0; i < hostSetIds.length; i++) {
+        const url = `${request.configParams.url}/hx/api/v3/hosts?sort=_id&host_sets._id=${hostSetIds[i]}`
+        const httpResponse = UrlFetchApp.fetch(url, requestOptions)
+        entries = entries.concat(JSON.parse(httpResponse.getContentText())['data']['entries'].map(entry => entry['_id']))
+    }
+
+    return entries
 }
 
 
