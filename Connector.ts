@@ -118,7 +118,13 @@ function getData(request) {
             .setType(dataDefinitions[fieldId].type)
     })
 
-    const rows = data['data'].filter(data => hostsInHostSet.includes(data['id'])).map(dataPoint => {
+    const rows = data['data'].filter(data => {
+        if (hostsInHostSet.length > 0) {
+            hostsInHostSet.includes(data['id'])
+        } else {
+            return true
+        }
+    }).map(dataPoint => {
         return {
             values: fieldIds.map(fieldId => dataDefinitions[fieldId].data(dataPoint))
         }
