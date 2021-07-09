@@ -91,7 +91,7 @@ _An example report that you could make using the data from this project._
 3. Click `Install add-on`
 4. Expand `Latest Version (Head)`
 5. Click the Data Studio URL it reveals
-6. Input the FireEye Endpoint Security Host Management API URL you got from above as well as your api user's credentials and click `Connect`
+6. Input the FireEye Endpoint Security API URL you got from above as well as your api user's credentials and click `Connect`
 7. Click `Create Report`
 8. Make a beautiful report!
 
